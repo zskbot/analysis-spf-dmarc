@@ -18,3 +18,7 @@ output/
 
 # VSCode settings
 .vscode/
+# Private keys and DKIM signing material
+*.private
+*.pem
+*.key
