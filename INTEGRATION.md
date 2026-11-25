@@ -20,3 +20,10 @@ Email-authentication posture analyzer. Run only against domains the requester ow
 - Add dependency lock/pinning and tests for DNS timeout, NXDOMAIN, malformed records, SPF lookup-limit and DMARC policy edge cases.
 - No bulk scans of third-party domains.
 - This adapter is read-only and Preview-only.
+
+
+## Critical source exposure discovered during audit
+- The default branch tracks `default.private`, which contains a PEM private-key payload. The key material is intentionally not reproduced here.
+- `dkim_sign.py` reads a private key and constructs an email with multiple `From` headers, including a spoofed display identity, then invokes `swaks` to send it. This script is excluded from the Security Center integration and must never be exposed as a public API or run by Preview automation.
+- Before merging any remediation, the key owner must identify the selector/domain, revoke/rotate the DKIM key and update DNS through an explicitly approved process. This task makes no DNS changes. Deleting the file from a branch does not erase it from Git history; a history purge and verification are separate follow-up operations.
+- Proposed branch cleanup removes the tracked private-key file and the mail-sending proof-of-concept script, and adds private-key patterns to `.gitignore`. The key must still be treated as compromised until rotated.
